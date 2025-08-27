@@ -42,11 +42,6 @@ set sortseed 19103
 
 **** Set home folder //** USERS MAY NEED TO REPLACE **// 
 
-** for windows users 
-// global dir .
-
-
-** for mac users
 pwd
 global dir .. 
 
@@ -70,7 +65,7 @@ global color3 midgreen*1.35
 global color4 lavender*1.5
 
 **** Install necessary packages 
-local packages estout desctable coefplot 
+local packages estout desctable coefplot khb
 
 foreach package in `packages' {
 	capture : which `package'
