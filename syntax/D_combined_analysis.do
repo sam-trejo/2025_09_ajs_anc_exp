@@ -150,7 +150,7 @@ set scheme burd
 preserve 
 
 
-	keep group guess_race_black white_guess_race_forced_black black_guess_race_forced_black ancestry_num ethnicitysimplified responseid study other_race_black
+	keep group guess_race_black white_guess_race_forced_black black_guess_race_forced_black ancestry_num ethnicitysimplified  study other_race_black
 	
 	gen guess_self = guess_race_black 
 	gen guess_other = . 
