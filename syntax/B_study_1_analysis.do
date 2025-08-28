@@ -11,6 +11,7 @@ use "${data}/ancestry_exp_study_1_post.dta", clear
 
 	* Note that this creates both an average and a weighted average
 	* Table 1 includes weighted average using weights provided by You Gov
+	
 	cd "${table}/"
 
 	svyset [pweight=weight] 
@@ -45,7 +46,7 @@ gen census = abs(scholarship-1)
 gen black = prior_identity 
 gen non_black = abs(black - 1) 
 
-rename discrimination disc // khb command has a maximum number of characters
+rename discrimination disc // rename because khb command has a maximum number of characters
 rename cultural_experience cult
 
 
@@ -135,6 +136,7 @@ esttab using "${table}/table_3_census_$date.csv", replace noobs postfoot(" ")
 		
 eststo clear 
 estimates clear 
+
 
 ** Prior Identification 
 

@@ -28,6 +28,7 @@ preserve
 	gen id = _n
 
 
+	** Will reshape - generate relevant measures for Black and White respondents  
 	su guess_race_black if ethnicitysimplified=="Black"
 	su guess_race_black if ethnicitysimplified=="White" 
 	su white_guess_race_forced_black if ethnicitysimplified=="Black"
@@ -44,10 +45,13 @@ preserve
 	gen guess_4 = black_guess_race_forced_black if ethnicitysimplified=="White"  //what white respondents think they will 
 	gen guess_5 = black_guess_race_forced_black if ethnicitysimplified=="Black"  //what black respondents think they will 
 	
-	su guess_0 
+	su guess_0 // Check values
 	su guess_3 
 
-reshape long guess_, i(id ethnicitysimplified) j(cat)
+	
+	** Reshape so that the guess varriables are aligned 
+	
+	reshape long guess_, i(id ethnicitysimplified) j(cat)
 	
 	rename guess_ guess 
 	
@@ -75,7 +79,7 @@ reshape long guess_, i(id ethnicitysimplified) j(cat)
 	replace barcat1 =1 if  cat == 5 // cat = 5 = what black respondents think black respondents will say 
 
 
-		*** produce bar graph	
+	*** produce bar graphs (2 side by side)
 	twoway bar mn_guess barcat if  cat ==1, ///
 			   lcolor(${color1}) fcolor(${color1}%20) lwidth(.3) ///
 			   barwidth(.9) xlabel( ///
@@ -135,7 +139,7 @@ preserve
 		drop if ethnicitysimplified == ""
 		
 		
-* standardize to the first-order distributions 
+* standardize perceptions to the first-order distributions 
 		
 		su likert 
 		di `r(mean)'

@@ -63,8 +63,12 @@ label var ancestry_coef_3 "36% SSA"
 		gen white_likert_std= (white_likert - `r(mean)')/`r(sd)'
 		su white_likert_std 
 
-	replace other_race_black = black_guess_race_forced_black if other_race_black==. & ethnicitysimplified == "Black"
-	replace other_race_black = white_guess_race_forced_black if other_race_black==. & ethnicitysimplified == "White"
+	* collapse study 1 and study 2 measures 
+	gen other_race_black_2 = . 
+	replace other_race_black_2 = other_race_black if study==1 
+	replace other_race_black_2 = black_guess_race_forced_black if ethnicitysimplified == "Black" & study==2 
+	replace other_race_black_2 = white_guess_race_forced_black if ethnicitysimplified == "White" & study==2 
+
 
 	gen other_likert = black_likert_std if ethnicitysimplified == "Black"
 	replace other_likert = white_likert_std if ethnicitysimplified == "White"
@@ -75,34 +79,48 @@ preserve
 	estimates clear 
 	eststo clear 
 	
-		eststo m1: reg initial_reaction ancestry_coef_3 i.census i.prior_identity i.image i.name_num i.survey_device i.state i.educ i.hispanic i.female_respondent i.missing_income i.party i.immigrant age ln_income if study == 1 
-		
-			eststo m2: reg initial_reaction ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income if ethnicitysimplified=="Black" & study ==2 
-		
-		eststo m3: reg initial_reaction ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income if ethnicitysimplified=="White"  & study ==2 
+				eststo m1: reg initial_reaction ancestry_coef_3 i.census i.prior_identity ///
+				${covs} if study == 1 
+				
+				eststo m2: reg initial_reaction ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity ///
+				${covs_study2} if ethnicitysimplified=="Black" & study ==2 
+				
+				eststo m3: reg initial_reaction ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity ///
+				${covs_study2}  if ethnicitysimplified=="White"  & study ==2 
 
-	*** 	
+			*** 	
 
-			eststo m2a: reg black_likert_std ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income if ethnicitysimplified=="Black" & study ==2 
-		
-		eststo m3a: reg white_likert_std ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income if ethnicitysimplified=="White"  & study ==2 
-	*** 
-			eststo m4: reg guess_race_black ancestry_coef_3 i.census i.prior_identity i.image i.name_num i.survey_device i.state i.educ i.hispanic i.female_respondent i.missing_income i.party i.immigrant age ln_income if study == 1 
-		
-			eststo m5: reg guess_race_black ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income if ethnicitysimplified=="Black" & study ==2 
-		
-		eststo m6: reg guess_race_black ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income if ethnicitysimplified=="White"  & study ==2 
-		
-	*** 
-			eststo m7: reg other_race_black ancestry_coef_3 i.census i.prior_identity i.image i.name_num i.survey_device i.state i.educ i.hispanic i.female_respondent i.missing_income i.party i.immigrant age ln_income if study == 1 
-		
-			eststo m8: reg black_guess_race_forced_black ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income if ethnicitysimplified=="Black" & study ==2 
-		
-		eststo m9: reg white_guess_race_forced_black  ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income if ethnicitysimplified=="White"  & study ==2 
+				eststo m2a: reg black_likert_std ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity ///
+				${covs_study2}  if ethnicitysimplified=="Black" & study ==2 
+				
+				eststo m3a: reg white_likert_std ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity ///
+				${covs_study2}  if ethnicitysimplified=="White"  & study ==2 
+			
+			*** 
+				eststo m4: reg guess_race_black ancestry_coef_3 i.census i.prior_identity ///
+				${covs} if study == 1 
+				
+				eststo m5: reg guess_race_black ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity ///
+				${covs_study2}  if ethnicitysimplified=="Black" & study ==2 
+				
+				eststo m6: reg guess_race_black ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity ///
+				${covs_study2}  if ethnicitysimplified=="White"  & study ==2 
+				
+			*** 
+			
+				eststo m7: reg other_race_black_2 ancestry_coef_3 i.census i.prior_identity ///
+				${covs} if study == 1 
+				
+				eststo m8: reg black_guess_race_forced_black ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity ///
+				${covs_study2}  if ethnicitysimplified=="Black" & study ==2 
+				
+				eststo m9: reg white_guess_race_forced_black  ancestry_coef_1 ancestry_coef_3 i.census i.prior_identity ///
+				${covs_study2}  if ethnicitysimplified=="White"  & study ==2 
 
 	
 		set scheme stcolor 
 	
+		* Coefficient Plot 
 		coefplot (m4, label(Black Respondents (Study 1)) msymbol(Dh)  mcolor(${color1}) ciopts(lcolor(${color1})) ) ///
 				 (m5, label(Black Respondents (Study 2))  msymbol(circle)  mcolor(${color1}) ciopts(lcolor(${color1}))) ///
 				 (m6, label(White Respondents (Study 2))  msymbol(circle)  mcolor(${color2}) ciopts(lcolor(${color2}))), ///
@@ -115,8 +133,7 @@ preserve
 				 xline(0, lcolor(black%30)) saving("${figure}/temp/coefplot_study1_study2_v_04_${date}.gph", replace)  graphregion(color(white)) ///
 				 ylabel(,labsize(small)) xlabel(,labsize(small)) subtitle(, size(medsmall)) ysize(4) xsize(5) 
 		
-	** coefplot doesn't have the option to rescale range via code, must be done manually --> change axes for classification -.2 to .2 and approval -.5 to .5 so everything is standardized
-	?
+	** NOTE ** coefplot doesn't have the option to rescale range via code, must be done manually --> change axes for classification -.2 to .2 and approval -.5 to .5 so everything is standardized
 	
 	graph export "${figure}/figure_1_${date}.png", replace width(8500)
 	graph export "${figure}/figure_1_${date}.tif", replace width(8500)
@@ -136,7 +153,8 @@ preserve
 	keep group guess_race_black white_guess_race_forced_black black_guess_race_forced_black ancestry_num ethnicitysimplified responseid study other_race_black
 	
 	gen guess_self = guess_race_black 
-	gen guess_other = black_guess_race_forced_black if group==1 
+	gen guess_other = . 
+	replace guess_other = black_guess_race_forced_black if group==1 
 	replace guess_other = white_guess_race_forced_black if group==2
 	replace guess_other = other_race_black if group== 0 
 	
@@ -153,7 +171,8 @@ preserve
 		(count) n_guess_other=guess_other , ///
 		by(group)
 	
-				
+	
+	* Generate confidence intervals 
 	foreach var in guess_self guess_other { 
 	
 	generate hi_`var' = mn_`var' + invttail(n_`var' -1,0.025)*(sd_`var' / sqrt(n_`var'))
@@ -206,30 +225,26 @@ restore
 
 preserve 
 
-	replace other_race_black = black_guess_race_forced_black if other_race_black==. & ethnicitysimplified == "Black"
-	replace other_race_black = white_guess_race_forced_black if other_race_black==. & ethnicitysimplified == "White"
-
-	tab other_race_black, missing 
 	
-	replace eth_num = 1 if study==1 
+	replace eth_num = 1 if study==1 // all respondents in study 1 self-identify as Black 
 	
 	estimates clear 
 	eststo clear 
 
-	tab guess_race_black other_race_black 
+	tab guess_race_black other_race_black_2 
 
 			*** regression table 
 
-			reg initial_reaction i.guess_race_black##i.other_race_black ///
+			reg initial_reaction i.guess_race_black##i.other_race_black_2 ///
 									i.ancestry_num i.census i.prior_identity i.eth_num i.study, robust 
 
-			eststo, title("Approval"): margins, at(guess_race_black=(0 1) ancestry_num=2 census=1 prior_identity=1 other_race_black=(0 1)) pwcompare(effects group) post 
+			eststo, title("Approval"): margins, at(guess_race_black=(0 1) ancestry_num=2 census=1 prior_identity=1 other_race_black_2=(0 1)) pwcompare(effects group) post 
 
 				
-			reg index i.guess_race_black##i.other_race_black ///
+			reg index i.guess_race_black##i.other_race_black_2 ///
 									i.ancestry_num i.census i.prior_identity i.eth_num i.study , robust 
 			
-			eststo, title("Integrity Index"): margins, at(guess_race_black=(0 1) ancestry_num=2 census=1 prior_identity=1 other_race_black=(0 1)) pwcompare(effects group) post 
+			eststo, title("Integrity Index"): margins, at(guess_race_black=(0 1) ancestry_num=2 census=1 prior_identity=1 other_race_black_2=(0 1)) pwcompare(effects group) post 
 
 
 			

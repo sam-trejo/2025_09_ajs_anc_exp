@@ -46,7 +46,6 @@ pwd
 global dir .. 
 
 
-
 ***set files path globals
 global data "${dir}/data"
 global syntax "${dir}/syntax" 
@@ -141,15 +140,16 @@ global covs "i.image i.name_num i.survey_device i.state i.educ i.hispanic i.fema
 
 global covs_study2 "i.image_num i.name_num i.state i.education i.sex_num i.missing_income i.political_party age ln_income" // Study 2 Covariates
 
+
 ********************************************************************************
-*** DO FILES 
+*** DO FILES - RUNS ALL ANALYSIS 
 ********************************************************************************
 
 do "${syntax}/B_study_1_analysis.do"
 
 do "${syntax}/C_study_2_analysis.do"
 
-do "${syntax}/D_combined_analysis.do"
+do "${syntax}/D_combined_analysis.do" 
 
 
 
